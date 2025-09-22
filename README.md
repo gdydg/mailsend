@@ -63,7 +63,7 @@ Name: `MAIL_USERNAME`
 
 Secret: 你的邮箱地址 (例如: your-email@domain.com)
 
-再次点击 New repository secret，创建第二个机密：
+- 再次点击 New repository secret，创建第二个机密：
 
 Name: `MAIL_PASSWORD`
 
