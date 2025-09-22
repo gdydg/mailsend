@@ -79,9 +79,9 @@ SMTP 服务器配置:
 
 ### SMTP服务器配置(重要)
 
-server_address: mail12.serv00.com # 修改为你的邮箱SMTP服务器地址
+- server_address: mail12.serv00.com # 修改为你的邮箱SMTP服务器地址
 
-server_port: 587                # 修改为你的服务器端口
+- server_port: 587                # 修改为你的服务器端口
 
 发件人、主题和正文:
 
