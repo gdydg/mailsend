@@ -1,0 +1,92 @@
+# 文件路径: .github/workflows/send-emails.yml
+# 描述: 这是一个GitHub Action工作流程，用于从CSV文件中读取收件人列表并批量发送邮件。
+
+name: Send Bulk Emails Workflow
+
+# 触发条件：允许你从GitHub仓库的Actions页面手动触发此工作流程
+on:
+  workflow_dispatch:
+
+jobs:
+  prepare-recipients:
+    # 任务：准备收件人列表
+    runs-on: ubuntu-latest
+    outputs:
+      # 输出一个JSON格式的收件人列表，供下一个任务使用
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        # 步骤1: 拉取你的仓库代码
+        uses: actions/checkout@v4
+        with:
+          # 新增：明确指定拉取的分支为 main
+          # 这可以确保 Action 使用的分支和你在网站上看到的是同一个
+          # 如果你的主分支名叫 master，请将下面的 main 修改为 master
+          ref: main
+
+      - name: Prepare recipient list for matrix
+        # 步骤2: 读取CSV文件，并将其转换为JSON格式
+        # 这个命令被加固以处理空行和无效行
+        id: set-matrix
+        run: |
+          echo "matrix=$(grep -v '^$' recipients.csv | tail -n +2 | jq -Rsc 'split("\n") | .[0:-1] | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]})')" >> $GITHUB_OUTPUT
+
+  send-mail:
+    # 任务：发送邮件
+    needs: prepare-recipients # 依赖上一个任务，确保收件人列表准备好
+    runs-on: ubuntu-latest
+    strategy:
+      # 策略：使用矩阵（matrix）为列表中的每个收件人并行或串行执行此任务
+      matrix:
+        # 从上一个任务的输出中获取收件人列表
+        recipient: ${{ fromJson(needs.prepare-recipients.outputs.matrix) }}
+      fail-fast: false # 如果一个邮件发送失败，其他邮件任务继续执行
+
+    steps:
+      - name: List files in directory (Debug)
+        # 调试步骤：列出当前工作目录下的所有文件和文件夹
+        # 这可以帮助我们确认附件文件是否存在以及路径是否正确
+        run: |
+          echo "--- Running ls -l ---"
+          ls -l
+          echo "--- Running find . ---"
+          find .
+
+      - name: Send email to ${{ matrix.recipient.name }}
+        # 步骤1: 使用 dawidd6/action-send-mail 这个 Action 来发送邮件
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # SMTP服务器配置
+          server_address: mail12.serv00.com
+          server_port: 587
+          
+          # 邮箱登录凭证
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+
+          # 邮件内容
+          subject: "FBI WARNNING" # 邮件主题
+          
+          # 收件人和发件人
+          to: ${{ matrix.recipient.email }}
+          from: FBI <${{ secrets.MAIL_USERNAME }}>
+          
+          # 使用 html_body 直接发送 HTML 格式的邮件
+          html_body: |
+            <h3>紧急调查通知</h3>
+            <hr>
+            <p>你好, <strong>${{ matrix.recipient.name }}</strong> 先生,</p>
+            <p>我们注意到一些需要您配合调查的情况。您可能涉嫌违反了佛罗里达州的相关法律。</p>
+            <p><strong>具体事项如下:</strong></p>
+            <ul>
+              <li>涉嫌浏览并传播限制内容。</li>
+              <li>需要您前来警局进行情况说明。</li>
+            </ul>
+            <p></p>
+            <p><img src="https://imge.ssss.bio/file/1758472981046_屏幕截图_2025-09-14_223546.png" alt="屏幕截图 2025-09-14 223546.png" width=100%></p>
+            <p>更多详情请<a href="https://www.fbi.gov">点击此处访问官网</a>。</p>
+            <p>请尽快与我们联系。</p>
+            <p><em>此致,</em><br><em>FBI</em></p>
+          
+          # 附件：这张图片既会作为普通附件，也会被上面的 <img> 标签引用以内嵌在正文中
+          attachments: screenshot.png
