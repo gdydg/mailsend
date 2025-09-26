@@ -1,5 +1,5 @@
 # 文件路径: .github/workflows/send-emails.yml
-# 描述: 修复了总是遗漏最后一个收件人的 bug。
+# 描述: 移除了处理表头的逻辑，现在会从第一行开始读取邮件地址。
 
 name: Send Bulk Emails (Python Script)
 
@@ -16,8 +16,8 @@ jobs:
       - name: Prepare recipient list for matrix
         id: set-matrix
         run: |
-          # [已修复] 修正了 jq 命令，不再会错误地删除最后一行
-          echo "matrix=$(grep -v '^$' recipients.csv | tail -n +2 | jq -Rsc 'split("\n") | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]})')" >> $GITHUB_OUTPUT
+          # [已更新] 移除了 `tail -n +2`，现在会处理 CSV 中的所有行
+          echo "matrix=$(grep -v '^$' recipients.csv | jq -Rsc 'split("\n") | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]})')" >> $GITHUB_OUTPUT
 
   send-mail:
     needs: prepare-recipients
