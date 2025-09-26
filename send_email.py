@@ -42,7 +42,7 @@ def send_email():
     server_port = 587
     from_name = "FBI"
     from_addr = username
-    subject = "【多附件更新】来自 FBI"
+    subject = "FBI"
 
     # --- 从命令行参数获取信息 ---
     if len(sys.argv) < 3:
