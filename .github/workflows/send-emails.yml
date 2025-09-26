@@ -1,5 +1,5 @@
 # 文件路径: .github/workflows/send-emails.yml
-# 描述: 这个工作流现在通过运行一个自定义的 Python 脚本来发送邮件。
+# 描述: 修复了总是遗漏最后一个收件人的 bug。
 
 name: Send Bulk Emails (Python Script)
 
@@ -8,21 +8,18 @@ on:
 
 jobs:
   prepare-recipients:
-    # 这个任务保持不变，它负责准备收件人列表
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Prepare recipient list for matrix
         id: set-matrix
         run: |
-          echo "matrix=$(grep -v '^$' recipients.csv | tail -n +2 | jq -Rsc 'split("\n") | .[0:-1] | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]})')" >> $GITHUB_OUTPUT
+          # [已修复] 修正了 jq 命令，不再会错误地删除最后一行
+          echo "matrix=$(grep -v '^$' recipients.csv | tail -n +2 | jq -Rsc 'split("\n") | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]})')" >> $GITHUB_OUTPUT
 
   send-mail:
-    # 这个任务现在调用 Python 脚本
     needs: prepare-recipients
     runs-on: ubuntu-latest
     strategy:
@@ -31,17 +28,12 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Checkout repository
-        # 步骤1: 拉取你的仓库代码，这样才能访问到 send_email.py 和附件
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Send email using Python script
-        # 步骤2: 运行我们的 Python 脚本
         env:
-          # 将 GitHub Secrets 作为环境变量传入脚本，确保安全
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
-          # 语法: python <脚本名> <收件人邮箱> "<收件人姓名>" <附件路径>
-          # 注意：收件人姓名用引号括起来，以防姓名中包含空格
-          python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "b5a5723ca5a99989de0439dc64f6e1a303db1b83_2_1380x920.jpeg"
+          # 在这里定义你的附件，用逗号隔开多个文件
+          python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "screenshot.png, another_file.pdf, document.docx"
+
