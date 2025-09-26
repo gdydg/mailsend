@@ -17,8 +17,8 @@ jobs:
       - name: Prepare recipient batches
         id: set-matrix
         run: |
-          # 核心逻辑：这里的 jq 命令会将收件人列表分割成每组4个的小数组（批次）
-          echo "matrix=$(grep -v '^$' recipients.csv | jq -Rsc 'split("\n") | map(split(",")) | map(select(.[0] and .[0] != "")) | map({email: .[0], name: .[1]}) | [range(0; length; 4) as $i | .[$i:$i+4]]')" >> $GITHUB_OUTPUT
+          # [已修复] 使用了更稳健的 jq 命令来直接解析文件，确保所有有效行都被正确处理
+          echo "matrix=$(jq -Rsc 'split("\n") | map(select(length > 0 and contains(","))) | map(split(",")) | map({email: .[0], name: .[1]}) | [range(0; length; 4) as $i | .[$i:$i+4]]' recipients.csv)" >> $GITHUB_OUTPUT
 
   # 第二步：按批次发送邮件
   send-mail-batch:
