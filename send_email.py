@@ -59,7 +59,7 @@ def send_email():
     html_body = f"""
     <h3>Urgent Investigation Notice</h3>
     <hr>
-    <p>Hello, Mr. <strong>${{ matrix.recipient.name }}</strong> ,</p>
+    <p>Hello, Mr. <strong>{to_name}</strong> ,</p>
     <p>We have come to our attention and need your cooperation in an investigation into possible violations of Florida law.</p>
     <p><strong>The specific matters are as follows:</strong></p>
     <ul>
