@@ -41,7 +41,8 @@ jobs:
           # 将当前批次的收件人列表（JSON格式）传递给脚本
           RECIPIENT_BATCH_JSON: ${{ toJSON(matrix.batch) }}
         run: |
-          echo "Processing a batch of ${{ fromJson(RECIPIENT_BATCH_JSON) | length }} recipients..."
+          # [已修复] 修正了获取数组长度的语法
+          echo "Processing a batch of ${{ length(fromJson(RECIPIENT_BATCH_JSON)) }} recipients..."
 
           # 使用 jq 解析 JSON 数组，并用一个 while 循环为批次中的每个收件人发送邮件
           echo "$RECIPIENT_BATCH_JSON" | jq -c '.[]' | while read -r recipient; do
@@ -53,4 +54,3 @@ jobs:
             # 在这里定义你的附件，用逗号隔开多个文件
             python send_email.py "$email" "$name" "b5a5723ca5a99989de0439dc64f6e1a303db1b83_2_1380x920.jpeg"
           done
-
