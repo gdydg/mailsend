@@ -73,7 +73,7 @@ Secret: 你的邮箱密码或应用专用密码
 
 ## 步骤 4: 自定义邮件内容 (send-emails.yml)
 
-打开 `.github/workflows/send-emails.yml` 文件，你可以根据需求修改以下几个部分：
+打开 `.github/workflows/send-emails.yml`和`send_email.py` 文件，你可以根据需求修改以下几个部分：
 
 SMTP 服务器配置:
 
