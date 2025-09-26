@@ -38,7 +38,7 @@ jobs:
         run: |
           # [新增] 在每次发送前暂停5秒，以避免触发服务器的速率限制
           echo "Waiting for 5 seconds before sending next email..."
-          sleep 2
+          sleep 1
           
           # 在这里定义你的附件，用逗号隔开多个文件
           python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "b5a5723ca5a99989de0439dc64f6e1a303db1b83_2_1380x920.jpeg"
