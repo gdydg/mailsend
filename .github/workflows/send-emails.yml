@@ -1,5 +1,5 @@
 # 文件路径: .github/workflows/send-emails.yml
-# 描述: 移除了处理表头的逻辑，现在会从第一行开始读取邮件地址。
+# 描述: 增加了速率限制控制，确保所有邮件都能成功发送。
 
 name: Send Bulk Emails (Python Script)
 
@@ -23,6 +23,8 @@ jobs:
     needs: prepare-recipients
     runs-on: ubuntu-latest
     strategy:
+      # [新增] 限制并发数量为1，让邮件一封一封串行发送
+      max-parallel: 1
       matrix:
         recipient: ${{ fromJson(needs.prepare-recipients.outputs.matrix) }}
       fail-fast: false
@@ -34,6 +36,10 @@ jobs:
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
+          # [新增] 在每次发送前暂停5秒，以避免触发服务器的速率限制
+          echo "Waiting for 5 seconds before sending next email..."
+          sleep 5
+          
           # 在这里定义你的附件，用逗号隔开多个文件
           python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "b5a5723ca5a99989de0439dc64f6e1a303db1b83_2_1380x920.jpeg"
 
