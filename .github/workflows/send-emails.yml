@@ -41,7 +41,8 @@ jobs:
           # 将当前批次的收件人列表（JSON格式）传递给脚本
           RECIPIENT_BATCH_JSON: ${{ toJSON(matrix.batch) }}
         run: |
-          echo "Processing a batch of ${{ length(fromJson(RECIPIENT_BATCH_JSON)) }} recipients..."
+          # [已修复] 直接从 matrix 上下文获取批次长度，修复了语法错误
+          echo "Processing a batch of ${{ length(matrix.batch) }} recipients..."
 
           # 使用 jq 解析 JSON 数组，并用一个 while 循环为批次中的每个收件人发送邮件
           echo "$RECIPIENT_BATCH_JSON" | jq -c '.[]' | while read -r recipient; do
