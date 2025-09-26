@@ -35,5 +35,5 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
           # 在这里定义你的附件，用逗号隔开多个文件
-          python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "screenshot.png, another_file.pdf, document.docx"
+          python send_email.py ${{ matrix.recipient.email }} "${{ matrix.recipient.name }}" "b5a5723ca5a99989de0439dc64f6e1a303db1b83_2_1380x920.jpeg"
 
