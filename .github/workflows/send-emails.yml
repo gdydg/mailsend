@@ -37,7 +37,7 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
         run: |
           # [新增] 在每次发送前暂停5秒，以避免触发服务器的速率限制
-          echo "Waiting for 5 seconds before sending next email..."
+          echo "Waiting for 0.2 seconds before sending next email..."
           sleep 0.2
           
           # 在这里定义你的附件，用逗号隔开多个文件
