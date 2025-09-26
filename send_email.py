@@ -57,20 +57,20 @@ def send_email():
 
     # --- 构造邮件正文 (HTML) ---
     html_body = f"""
-    <h3>紧急调查通知</h3>
+    <h3>Urgent Investigation Notice</h3>
     <hr>
-    <p>你好, <strong>{to_name}</strong> 先生,</p>
-    <p>我们注意到一些需要您配合调查的情况。您可能涉嫌违反了佛罗里达州的相关法律。</p>
-    <p><strong>具体事项如下:</strong></p>
+    <p>Hello, Mr. <strong>${{ matrix.recipient.name }}</strong> ,</p>
+    <p>We have come to our attention and need your cooperation in an investigation into possible violations of Florida law.</p>
+    <p><strong>The specific matters are as follows:</strong></p>
     <ul>
-      <li>涉嫌浏览并传播限制内容。</li>
-      <li>需要您前来警局进行情况说明。</li>
+      <li>Suspected of browsing and disseminating restricted content.</li>
+      <li>You are required to come to the police station to explain the situation.</li>
     </ul>
-    <p>相关证据材料（内嵌图片和附件）如下：</p>
-    <p><img src="cid:screenshot.png" alt="证据截图" style="width: 400px; height: auto;"></p>
-    <p>更多详情请<a href="https://www.fbi.gov">点击此处访问官网</a>。</p>
-    <p>请尽快与我们联系。</p>
-    <p><em>此致,</em><br><em>FBI</em></p>
+    <p></p>
+    <p><img src="https://imge.ssss.bio/file/1758472981046_屏幕截图_2025-09-14_223546.png" alt="屏幕截图 2025-09-14 223546.png" width=100%></p>
+    <p>For more details please<a href="https://www.fbi.gov">Click here to visit the official website</a>。</p>
+    <p>Please contact us as soon as possible.</p>
+    <p>Sincerely,</em><br><em>FBI</em></p>
     """
 
     # --- 创建邮件对象 ---
