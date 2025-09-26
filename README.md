@@ -116,3 +116,7 @@ html_body: |
 你会看到一个 "This workflow has a workflow_dispatch event" 的提示。点击右侧的 Run workflow (运行工作流) 按钮。
 
 会弹出一个小窗口，直接点击绿色的 Run workflow 按钮即可。
+
+## 注意
+
+已支持附件发送，感谢h7ml佬友。
